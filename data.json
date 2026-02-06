@@ -1,0 +1,30 @@
+{
+  "lastUpdate": "2026-02-06T23:30:00Z",
+  "shideAnalysis": {
+    "btc": "Recuperação agressiva de crash US$ 60K. Volume forte. Risco moderado.",
+    "eth": "Seguindo BTC momentum. Correlação positiva.",
+    "sol": "Alta volatilidade. Cautela recomendada."
+  },
+  "opportunities": [
+    {
+      "asset": "BTC",
+      "type": "long",
+      "entry": 68000,
+      "target": 75000,
+      "stop": 64000,
+      "probability": 65
+    }
+  ],
+  "alerts": [
+    {
+      "level": "high",
+      "asset": "BTC",
+      "message": "Movimento forte de +12.2% em 24h",
+      "time": "2026-02-06T23:25:00Z"
+    }
+  ],
+  "marketSentiment": {
+    "fearGreed": 9,
+    "classification": "Extreme Fear"
+  }
+}

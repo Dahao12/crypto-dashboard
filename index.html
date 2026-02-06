@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Dashboard - Shide Agent</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>⚡ Crypto Dashboard</h1>
+        <p class="subtitle">Análise em Tempo Real | Shide Agent</p>
+        <p class="last-update">Última atualização: <span id="lastUpdate">--</span></p>
+    </header>
+
+    <main>
+        <!-- Summary Cards -->
+        <section class="summary">
+            <div class="card summary-card">
+                <h3>Fear & Greed Index</h3>
+                <div class="metric" id="fearGreedValue">--</div>
+                <div class="sentiment" id="fearGreedSentiment">--</div>
+            </div>
+            <div class="card summary-card">
+                <h3>Market Cap (Total)</h3>
+                <div class="metric" id="marketCapTotal">--</div>
+            </div>
+            <div class="card summary-card">
+                <h3>Volume 24h</h3>
+                <div class="metric" id="volume24h">--</div>
+            </div>
+            <div class="card summary-card">
+                <h3>Ativos Monitorados</h3>
+                <div class="metric" id="activeAssets">--</div>
+            </div>
+        </section>
+
+        <!-- Crypto Assets -->
+        <section class="assets">
+            <div class="card asset-card" id="btc-card">
+                <div class="asset-header">
+                    <img src="https://coin-images.coingecko.com/coins/images/1/small/bitcoin.png" alt="BTC">
+                    <h2>Bitcoin (BTC)</h2>
+                    <span class="rank">#1</span>
+                </div>
+                <div class="price">
+                    <span class="price-value" id="btc-price">--</span>
+                    <span class="price-change" id="btc-change">--</span>
+                </div>
+                <div class="metrics">
+                    <div class="metric-item">
+                        <span>24h High</span>
+                        <strong id="btc-high">--</strong>
+                    </div>
+                    <div class="metric-item">
+                        <span>24h Low</span>
+                        <strong id="btc-low">--</strong>
+                    </div>
+                    <div class="metric-item">
+                        <span>Market Cap</span>
+                        <strong id="btc-mcap">--</strong>
+                    </div>
+                    <div class="metric-item">
+                        <span>Volume</span>
+                        <strong id="btc-volume">--</strong>
+                    </div>
+                </div>
+                <div class="analysis" id="btc-analysis">
+                    <h4>📊 Análise Shide</h4>
+                    <p id="btc-analysis-text">Carregando análise...</p>
+                </div>
+            </div>
+
+            <div class="card asset-card" id="eth-card">
+                <div class="asset-header">
+                    <img src="https://coin-images.coingecko.com/coins/images/279/small/ethereum.png" alt="ETH">
+                    <h2>Ethereum (ETH)</h2>
+                    <span class="rank">#2</span>
+                </div>
+                <div class="price">
+                    <span class="price-value" id="eth-price">--</span>
+                    <span class="price-change" id="eth-change">--</span>
+                </div>
+                <div class="metrics">
+                    <div class="metric-item">
+                        <span>24h High</span>
+                        <strong id="eth-high">--</strong>
+                    </div>
+                    <div class="metric-item">
+                        <span>24h Low</span>
+                        <strong id="eth-low">--</strong>
+                    </div>
+                    <div class="metric-item">
+                        <span>Market Cap</span>
+                        <strong id="eth-mcap">--</strong>
+                    </div>
+                    <div class="metric-item">
+                        <span>Volume</span>
+                        <strong id="eth-volume">--</strong>
+                    </div>
+                </div>
+                <div class="analysis" id="eth-analysis">
+                    <h4>📊 Análise Shide</h4>
+                    <p id="eth-analysis-text">Carregando análise...</p>
+                </div>
+            </div>
+
+            <div class="card asset-card" id="sol-card">
+                <div class="asset-header">
+                    <img src="https://coin-images.coingecko.com/coins/images/4128/small/solana.png" alt="SOL">
+                    <h2>Solana (SOL)</h2>
+                    <span class="rank">#5</span>
+                </div>
+                <div class="price">
+                    <span class="price-value" id="sol-price">--</span>
+                    <span class="price-change" id="sol-change">--</span>
+                </div>
+                <div class="metrics">
+                    <div class="metric-item">
+                        <span>24h High</span>
+                        <strong id="sol-high">--</strong>
+                    </div>
+                    <div class="metric-item">
+                        <span>24h Low</span>
+                        <strong id="sol-low">--</strong>
+                    </div>
+                    <div class="metric-item">
+                        <span>Market Cap</span>
+                        <strong id="sol-mcap">--</strong>
+                    </div>
+                    <div class="metric-item">
+                        <span>Volume</span>
+                        <strong id="sol-volume">--</strong>
+                    </div>
+                </div>
+                <div class="analysis" id="sol-analysis">
+                    <h4>📊 Análise Shide</h4>
+                    <p id="sol-analysis-text">Carregando análise...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Alerts -->
+        <section class="alerts">
+            <div class="card">
+                <h3>🚨 Alertas Recentes</h3>
+                <div id="alerts-list">
+                    <p class="no-alerts">Nenhum alerta ativo</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analysis Notes -->
+        <section class="notes">
+            <div class="card">
+                <h3>📝 Notas de Análise</h3>
+                <div id="analysis-notes">
+                    <p>Carregando notas...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Powered by Shide Agent | OpenClaw | CoinGecko API</p>
+        <p>Auto-refresh a cada 5 minutos</p>
+    </footer>
+</body>
+</html>
