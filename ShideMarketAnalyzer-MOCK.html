@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShideMarketAnalyzer - Professional Crypto Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a192f;
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Header */
+        header {
+            background: rgba(10, 25, 47, 0.95);
+            border-bottom: 2px solid #00d4ff;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            font-size: 1.8rem;
+        }
+
+        .logo h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #00d4ff, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .ticker {
+            display: flex;
+            gap: 2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+        }
+
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ticker-item .price {
+            color: #00e676;
+        }
+
+        .ticker-item .change {
+            color: #00e676;
+            font-weight: 600;
+        }
+
+        .ticker-item .change.down {
+            color: #ff1744;
+        }
+
+        .clock {
+            display: flex;
+            gap: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: #b0bec5;
+        }
+
+        /* Tabs */
+        .tabs {
+            background: rgba(26, 41, 66, 0.8);
+            border-bottom: 1px solid #1a2942;
+            padding: 0 1.5rem;
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .tab {
+            background: transparent;
+            border: none;
+            color: #b0bec5;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .tab:hover {
+            color: #ffffff;
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .tab.active {
+            color: #00d4ff;
+            border-bottom-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        /* Main Container */
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr 380px;
+            gap: 1rem;
+            padding: 1rem;
+            height: calc(100vh - 120px);
+        }
+
+        /* Asset List Panel */
+        .panel {
+            background: rgba(26, 41, 66, 0.6);
+            border: 1px solid #1a2942;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .panel-header {
+            background: rgba(0, 212, 255, 0.1);
+            border-bottom: 1px solid #1a2942;
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-header h3 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #00d4ff;
+        }
+
+        .asset-list {
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+        }
+
+        .asset-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .asset-item:hover {
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .asset-left {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .asset-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(0, 212, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .asset-info h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .asset-info span {
+            font-size: 0.7rem;
+            color: #b0bec5;
+        }
+
+        .asset-right {
+            text-align: right;
+        }
+
+        .asset-price {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .asset-change {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 4px;
+        }
+
+        .asset-change.up {
+            background: rgba(0, 230, 118, 0.15);
+            color: #00e676;
+        }
+
+        .asset-change.down {
+            background: rgba(255, 23, 68, 0.15);
+            color: #ff1744;
+        }
+
+        /* Main Chart Area */
+        .main-area {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            overflow: hidden;
+        }
+
+        .signal-bar {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid #ffd700;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .signal-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .signal-item .value {
+            font-weight: 700;
+            color: #ffd700;
+        }
+
+        .chart-container {
+            background: rgba(26, 41, 66, 0.6);
+            border: 1px solid #1a2942;
+            border-radius: 8px;
+            padding: 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .chart-title h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-title .live {
+            background: #00e676;
+            color: #0a192f;
+            padding: 0.125rem 0.5rem;
+            border-radius: 50px;
+            font-size: 0.625rem;
+            font-weight: 700;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .time-ranges {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .range-btn {
+            background: transparent;
+            border: 1px solid #1a2942;
+            color: #b0bec5;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .range-btn:hover {
+            border-color: #00d4ff;
+            color: #ffffff;
+        }
+
+        .range-btn.active {
+            background: #00d4ff;
+            border-color: #00d4ff;
+            color: #0a192f;
+        }
+
+        .chart-visual {
+            flex: 1;
+            background: rgba(10, 25, 47, 0.8);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-visual::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(0, 212, 255, 0.05), rgba(255, 215, 0, 0.05));
+            pointer-events: none;
+        }
+
+        .chart-placeholder {
+            text-align: center;
+            color: #b0bec5;
+            font-size: 0.875rem;
+        }
+
+        /* AI Assistant Panel */
+        .ai-panel {
+            background: rgba(26, 41, 66, 0.6);
+            border: 1px solid #1a2942;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .ai-header {
+            background: rgba(123, 44, 191, 0.15);
+            border-bottom: 1px solid #1a2942;
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-header h3 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #7b2cbf;
+        }
+
+        .ai-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.7rem;
+            color: #b0bec5;
+        }
+
+        .ai-status .dot {
+            width: 6px;
+            height: 6px;
+            background: #00e676;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap:rem;
+        }
+
+        .message {
+            background: rgba(10, 25, 47, 0.8);
+            border: 1px solid #1a2942;
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 0.8rem;
+            line-height: 1.6;
+        }
+
+        .message.ai {
+            border-left: 3px solid #7b2cbf;
+        }
+
+        .message.user {
+            border-right: 3px solid #00d4ff;
+        }
+
+        .message .sender {
+            font-weight: 700;
+            font-size: 0.75rem;
+            margin-bottom: 0.375rem;
+            color: #ffffff;
+        }
+
+        .message.ai .sender {
+            color: #7b2cbf;
+        }
+
+        .quick-prompts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            border-top: 1px solid #1a2942;
+        }
+
+        .quick-prompt {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid #1a2942;
+            color: #00d4ff;
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-prompt:hover {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: #00d4ff;
+        }
+
+        .input-area {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid #1a2942;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .input-field {
+            flex: 1;
+            background: rgba(10, 25, 47, 0.8);
+            border: 1px solid #1a2942;
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            color: #ffffff;
+            font-size: 0.8rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+
+        .send-btn {
+            background: #7b2cbf;
+            border: none;
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .send-btn:hover {
+            background: #6a1b9a;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(10, 25, 47, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1a2942;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00d4ff;
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .container {
+                grid-template-columns: 240px 1fr 340px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 200px 1fr;
+            }
+            .ai-panel {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <span class="logo-icon">📊⚡</span>
+            <h1>ShideMarketAnalyzer</h1>
+        </div>
+        <div class="ticker">
+            <div class="ticker-item">
+                <span>BTC $70,566</span>
+                <span class="price">▲ +12.2%</span>
+            </div>
+            <div class="ticker-item">
+                <span>ETH $3,421</span>
+                <span class="price">▲ +8.1%</span>
+            </div>
+            <div class="ticker-item">
+                <span>SOL $142</span>
+                <span class="change down">▼ -3.2%</span>
+            </div>
+        </div>
+        <div class="clock">
+            <span>London: 22:59</span>
+            <span>NY: 17:59</span>
+            <span>Tokyo: 02:59</span>
+            <span>23:59:45 GMT</span>
+        </div>
+    </header>
+
+    <nav class="tabs">
+        <button class="tab active">Overview</button>
+        <button class="tab">Market</button>
+        <button class="tab">Analysis</button>
+        <button class="tab">Alerts</button>
+        <button class="tab">AI Assistant</button>
+    </nav>
+
+    <div class="container">
+        <!-- Left Panel - Asset List -->
+        <div class="panel">
+            <div class="panel-header">
+                <h3>📊 Assets</h3>
+                <span style="color: #b0bec5; font-size: 0.7rem;">3 watched</span>
+            </div>
+            <div class="asset-list">
+                <div class="asset-item">
+                    <div class="asset-left">
+                        <div class="asset-icon">₿</div>
+                        <div class="asset-info">
+                            <h4>Bitcoin</h4>
+                            <span>BTC</span>
+                        </div>
+                    </div>
+                    <div class="asset-right">
+                        <div class="asset-price">$70,566</div>
+                        <div class="asset-change up">▲ +12.2%</div>
+                    </div>
+                </div>
+                <div class="asset-item">
+                    <div class="asset-left">
+                        <div class="asset-icon">Ξ</div>
+                        <div class="asset-info">
+                            <h4>Ethereum</h4>
+                            <span>ETH</span>
+                        </div>
+                    </div>
+                    <div class="asset-right">
+                        <div class="asset-price">$3,421</div>
+                        <div class="asset-change up">▲ +8.1%</div>
+                    </div>
+                </div>
+                <div class="asset-item">
+                    <div class="asset-left">
+                        <div class="asset-icon">◎</div>
+                        <div class="asset-info">
+                            <h4>Solana</h4>
+                            <span>SOL</span>
+                        </div>
+                    </div>
+                    <div class="asset-right">
+                        <div class="asset-price">$142</div>
+                        <div class="asset-change down">▼ -3.2%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center - Main Chart Area -->
+        <div class="main-area">
+            <div class="signal-bar">
+                <div class="signal-item">
+                    <span>🎭 Fear & Greed:</span>
+                    <span class="value">12 (Extreme Fear)</span>
+                </div>
+                <div class="signal-item">
+                    <span>⚠️ LIVE Signal:</span>
+                    <span class="value" style="color: #00e676;">Strong Buy Opportunity</span>
+                </div>
+                <div class="signal-item">
+                    <span>🌊 Market Tide:</span>
+                    <span class="value">Bearish → Bullish Reversal</span>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <h2>₿ Bitcoin (BTC/USD) <span class="live">LIVE</span></h2>
+                    </div>
+                    <div class="time-ranges">
+                        <button class="range-btn">1H</button>
+                        <button class="range-btn">4H</button>
+                        <button class="range-btn active">1D</button>
+                        <button class="range-btn">1W</button>
+                        <button class="range-btn">1M</button>
+                    </div>
+                </div>
+                <div class="chart-visual">
+                    <div class="chart-placeholder">
+                        📊 Candlestick Chart with Technical Indicators<br>
+                        <span style="font-size: 0.7rem;">EMA 20, EMA 50, Bollinger Bands, RSI, MACD</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel - AI Assistant -->
+        <div class="ai-panel">
+            <div class="ai-header">
+                <h3>🤖 AI Assistant</h3>
+                <div class="ai-status">
+                    <span class="dot"></span>
+                    <span>Connected</span>
+                </div>
+            </div>
+            <div class="chat-container">
+                <div class="message ai">
+                    <div class="sender">⚡ Shide</div>
+                    <div><strong>BTC Analysis Complete</strong><br><br>
+                    ● Current: $70,566 (+12.2% 24h)<br>
+                    ● Setup: Recovery from $60,236 low<br>
+                    ● Entry zone: $68,500 - $69,000<br>
+                    ● Target: $74,000<br>
+                    ● Stop: $64,500<br>
+                    ● Probability: 68%<br><br>
+                    <em>Strong buy signal detected on pullback.</em></div>
+                </div>
+            </div>
+            <div class="quick-prompts">
+                <button class="quick-prompt">Technical Analysis</button>
+                <button class="quick-prompt">High Probability Setup</button>
+                <button class="quick-prompt">Sentiment Check</button>
+                <button class="quick-prompt">Short-term Prediction</button>
+            </div>
+            <div class="input-area">
+                <input type="text" class="input-field" placeholder="Ask Shide for analysis...">
+                <button class="send-btn">ANALYZE</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
