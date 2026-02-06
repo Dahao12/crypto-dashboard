@@ -6,157 +6,279 @@
     <title>Crypto Dashboard - Shide Agent</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
+    <!-- Chart.js for graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <header>
-        <h1>⚡ Crypto Dashboard</h1>
-        <p class="subtitle">Análise em Tempo Real | Shide Agent</p>
-        <p class="last-update">Última atualização: <span id="lastUpdate">--</span></p>
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <div>
+                    <h1>Crypto Dashboard</h1>
+                    <p class="subtitle">Análise em Tempo Real | Shide Agent</p>
+                </div>
+            </div>
+            <div class="status">
+                <div class="status-indicator" id="connectionStatus">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Conectado</span>
+                </div>
+                <div class="last-update" id="lastUpdate">Atualizado: --</div>
+            </div>
+        </div>
     </header>
 
+    <nav class="tabs">
+        <button class="tab active" data-tab="overview">Visão Geral</button>
+        <button class="tab" data-tab="analysis">Análise</button>
+        <button class="tab" data-tab="alerts">Alertas</button>
+    </nav>
+
     <main>
-        <!-- Summary Cards -->
-        <section class="summary">
-            <div class="card summary-card">
-                <h3>Fear & Greed Index</h3>
-                <div class="metric" id="fearGreedValue">--</div>
-                <div class="sentiment" id="fearGreedSentiment">--</div>
+        <!-- Overview Tab -->
+        <section class="tab-content active" id="overview">
+            <!-- Fear & Greed Card -->
+            <div class="card fear-greed-card">
+                <div class="card-header">
+                    <h3>🎭 Fear & Greed Index</h3>
+                    <span class="live-badge" id="liveBadge">LIVE</span>
+                </div>
+                <div class="fear-greed-content">
+                    <div class="gauge" id="gauge">
+                        <svg viewBox="0 0 100 100" class="gauge-svg">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#1a1f36" stroke-width="8"/>
+                            <circle class="gauge-arc" cx="50" cy="50" r="45" fill="none"
+                                    stroke="url(#gradient)" stroke-width="8"
+                                    stroke-dasharray="0 283"
+                                    id="gaugeArc"/>
+                            <defs>
+                                <linearGradient id="gradient">
+                                    <stop offset="0%" stop-color="#ef4444"/>
+                                    <stop offset="50%" stop-color="#eab308"/>
+                                    <stop offset="100%" stop-color="#22c55e"/>
+                                </linearGradient>
+                            </defs>
+                            <text x="50" y="40" text-anchor="middle" fill="#64748b" font-size="8">Sentimento</text>
+                            <text x="50" y="58" text-anchor="middle" fill="#e2e8f0" font-size="24" font-weight="bold" id="fearGreedValue">--</text>
+                            <text x="50" y="70" text-anchor="middle" fill="#94a3b8" font-size="10" id="fearGreedSentiment">--</text>
+                        </svg>
+                    </div>
+                    <div class="fear-greed-legend">
+                        <div class="legend-item"><span class="dot extreme-fear"></span>Extreme Fear</div>
+                        <div class="legend-item"><span class="dot fear"></span>Fear</div>
+                        <div class="legend-item"><span class="dot neutral"></span>Neutral</div>
+                        <div class="legend-item"><span class="dot greed"></span>Greed</div>
+                        <div class="legend-item"><span class="dot extreme-greed"></span>Extreme Greed</div>
+                    </div>
+                </div>
             </div>
-            <div class="card summary-card">
-                <h3>Market Cap (Total)</h3>
-                <div class="metric" id="marketCapTotal">--</div>
+
+            <!-- Market Summary -->
+            <div class="cards-grid">
+                <div class="card summary-card">
+                    <div class="card-header">
+                        <h4>💎 Market Cap Total</h4>
+                    </div>
+                    <div class="metric-value" id="marketCapTotal">--</div>
+                    <div class="metric-change" id="marketCapChange">--</div>
+                </div>
+                <div class="card summary-card">
+                    <div class="card-header">
+                        <h4>📊 Volume 24h</h4>
+                    </div>
+                    <div class="metric-value" id="volume24h">--</div>
+                    <div class="metric-change" id="volumeChange">--</div>
+                </div>
+                <div class="card summary-card">
+                    <div class="card-header">
+                        <h4>⚡ Dominância BTC</h4>
+                    </div>
+                    <div class="metric-value" id="btcDominance">--</div>
+                    <div class="metric-change positive">+1.2%</div>
+                </div>
+                <div class="card summary-card">
+                    <div class="card-header">
+                        <h4>🔋 Alertas Ativos</h4>
+                    </div>
+                    <div class="metric-value" id="activeAlerts">--</div>
+                    <div class="metric-change" id="alertLevel">--</div>
+                </div>
             </div>
-            <div class="card summary-card">
-                <h3>Volume 24h</h3>
-                <div class="metric" id="volume24h">--</div>
+
+            <!-- Price Charts -->
+            <div class="card charts-card">
+                <div class="card-header">
+                    <h3>📈 Preços em Tempo Real</h3>
+                    <div class="chart-controls">
+                        <button class="time-range active" data-range="1h">1H</button>
+                        <button class="time-range" data-range="24h">24H</button>
+                        <button class="time-range" data-range="7d">7D</button>
+                        <button class="time-range" data-range="30d">30D</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="priceChart"></canvas>
+                </div>
             </div>
-            <div class="card summary-card">
-                <h3>Ativos Monitorados</h3>
-                <div class="metric" id="activeAssets">--</div>
+
+            <!-- Asset Cards -->
+            <div class="assets-grid">
+                <div class="card asset-card" id="btc-card">
+                    <div class="asset-header">
+                        <div class="asset-icon">
+                            <img src="https://coin-images.coingecko.com/coins/images/1/small/bitcoin.png" alt="BTC">
+                        </div>
+                        <div class="asset-info">
+                            <h2>Bitcoin</h2>
+                            <span class="rank">#1</span>
+                        </div>
+                        <div class="asset-change" id="btc-change-badge">--</div>
+                    </div>
+                    <div class="price-info">
+                        <div class="price" id="btc-price">--</div>
+                        <div class="price-change" id="btc-change-text">--</div>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <span className="metric-label">24h High</span>
+                            <strong id="btc-high">--</strong>
+                        </div>
+                        <div class="metric-item">
+                            <span className="metric-label">24h Low</span>
+                            <strong id="btc-low">--</strong>
+                        </div>
+                        <div class="metric-item">
+                            <span className="metric-label">Market Cap</span>
+                            <strong id="btc-mcap">--</strong>
+                        </div>
+                        <div class="metric-item">
+                            <span className="metric-label">Volume</span>
+                            <strong id="btc-volume">--</strong>
+                        </div>
+                    </div>
+                    <div class="mini-chart">
+                        <canvas id="btcMiniChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card asset-card" id="eth-card">
+                    <div class="asset-header">
+                        <div class="asset-icon">
+                            <img src="https://coin-images.coingecko.com/coins/images/279/small/ethereum.png" alt="ETH">
+                        </div>
+                        <div class="asset-info">
+                            <h2>Ethereum</h2>
+                            <span class="rank">#2</span>
+                        </div>
+                        <div class="asset-change" id="eth-change-badge">--</div>
+                    </div>
+                    <div class="price-info">
+                        <div class="price" id="eth-price">--</div>
+                        <div class="price-change" id="eth-change-text">--</div>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <span className="metric-label">24h High</span>
+                            <strong id="eth-high">--</strong>
+                        </div>
+                        <div class="metric-item">
+                            <span className="metric-label">24h Low</span>
+                            <strong id="eth-low">--</strong>
+                        </div>
+                        <div class="metric-item">
+                            <span className="metric-label">Market Cap</span>
+                            <strong id="eth-mcap">--</strong>
+                        </div>
+                        <div class="metric-item">
+                            <span className="metric-label">Volume</span>
+                            <strong id="eth-volume">--</strong>
+                        </div>
+                    </div>
+                    <div class="mini-chart">
+                        <canvas id="ethMiniChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card asset-card" id="sol-card">
+                    <div class="asset-header">
+                        <div class="asset-icon">
+                            <img src="https://coin-images.coingecko.com/coins/images/4128/small/solana.png" alt="SOL">
+                        </div>
+                        <div class="asset-info">
+                            <h2>Solana</h2>
+                            <span class="rank">#5</span>
+                        </div>
+                        <div class="asset-change" id="sol-change-badge">--</div>
+                    </div>
+                    <div class="price-info">
+                        <div class="price" id="sol-price">--</div>
+                        <div class="price-change" id="sol-change-text">--</div>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <span className="metric-label">24h High</span>
+                            <strong id="sol-high">--</strong>
+                        </div>
+                        <div class="metric-item">
+                            <span className="metric-label">24h Low</span>
+                            <strong id="sol-low">--</strong>
+                        </div>
+                        <div class="metric-item">
+                            <span className="metric-label">Market Cap</span>
+                            <strong id="sol-mcap">--</strong>
+                        </div>
+                        <div class="metric-item">
+                            <span className="metric-label">Volume</span>
+                            <strong id="sol-volume">--</strong>
+                        </div>
+                    </div>
+                    <div class="mini-chart">
+                        <canvas id="solMiniChart"></canvas>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- Crypto Assets -->
-        <section class="assets">
-            <div class="card asset-card" id="btc-card">
-                <div class="asset-header">
-                    <img src="https://coin-images.coingecko.com/coins/images/1/small/bitcoin.png" alt="BTC">
-                    <h2>Bitcoin (BTC)</h2>
-                    <span class="rank">#1</span>
-                </div>
-                <div class="price">
-                    <span class="price-value" id="btc-price">--</span>
-                    <span class="price-change" id="btc-change">--</span>
-                </div>
-                <div class="metrics">
-                    <div class="metric-item">
-                        <span>24h High</span>
-                        <strong id="btc-high">--</strong>
-                    </div>
-                    <div class="metric-item">
-                        <span>24h Low</span>
-                        <strong id="btc-low">--</strong>
-                    </div>
-                    <div class="metric-item">
-                        <span>Market Cap</span>
-                        <strong id="btc-mcap">--</strong>
-                    </div>
-                    <div class="metric-item">
-                        <span>Volume</span>
-                        <strong id="btc-volume">--</strong>
-                    </div>
-                </div>
-                <div class="analysis" id="btc-analysis">
-                    <h4>📊 Análise Shide</h4>
-                    <p id="btc-analysis-text">Carregando análise...</p>
-                </div>
-            </div>
-
-            <div class="card asset-card" id="eth-card">
-                <div class="asset-header">
-                    <img src="https://coin-images.coingecko.com/coins/images/279/small/ethereum.png" alt="ETH">
-                    <h2>Ethereum (ETH)</h2>
-                    <span class="rank">#2</span>
-                </div>
-                <div class="price">
-                    <span class="price-value" id="eth-price">--</span>
-                    <span class="price-change" id="eth-change">--</span>
-                </div>
-                <div class="metrics">
-                    <div class="metric-item">
-                        <span>24h High</span>
-                        <strong id="eth-high">--</strong>
-                    </div>
-                    <div class="metric-item">
-                        <span>24h Low</span>
-                        <strong id="eth-low">--</strong>
-                    </div>
-                    <div class="metric-item">
-                        <span>Market Cap</span>
-                        <strong id="eth-mcap">--</strong>
-                    </div>
-                    <div class="metric-item">
-                        <span>Volume</span>
-                        <strong id="eth-volume">--</strong>
-                    </div>
-                </div>
-                <div class="analysis" id="eth-analysis">
-                    <h4>📊 Análise Shide</h4>
-                    <p id="eth-analysis-text">Carregando análise...</p>
-                </div>
-            </div>
-
-            <div class="card asset-card" id="sol-card">
-                <div class="asset-header">
-                    <img src="https://coin-images.coingecko.com/coins/images/4128/small/solana.png" alt="SOL">
-                    <h2>Solana (SOL)</h2>
-                    <span class="rank">#5</span>
-                </div>
-                <div class="price">
-                    <span class="price-value" id="sol-price">--</span>
-                    <span class="price-change" id="sol-change">--</span>
-                </div>
-                <div class="metrics">
-                    <div class="metric-item">
-                        <span>24h High</span>
-                        <strong id="sol-high">--</strong>
-                    </div>
-                    <div class="metric-item">
-                        <span>24h Low</span>
-                        <strong id="sol-low">--</strong>
-                    </div>
-                    <div class="metric-item">
-                        <span>Market Cap</span>
-                        <strong id="sol-mcap">--</strong>
-                    </div>
-                    <div class="metric-item">
-                        <span>Volume</span>
-                        <strong id="sol-volume">--</strong>
-                    </div>
-                </div>
-                <div class="analysis" id="sol-analysis">
-                    <h4>📊 Análise Shide</h4>
-                    <p id="sol-analysis-text">Carregando análise...</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Recent Alerts -->
-        <section class="alerts">
+        <!-- Analysis Tab -->
+        <section class="tab-content" id="analysis">
             <div class="card">
-                <h3>🚨 Alertas Recentes</h3>
-                <div id="alerts-list">
-                    <p class="no-alerts">Nenhum alerta ativo</p>
+                <div class="card-header">
+                    <h3>📊 Análise Shide</h3>
+                </div>
+                <div id="shideAnalysisContent">
+                    <p>Carregando análise...</p>
                 </div>
             </div>
-        </section>
 
-        <!-- Analysis Notes -->
-        <section class="notes">
             <div class="card">
-                <h3>📝 Notas de Análise</h3>
-                <div id="analysis-notes">
+                <div class="card-header">
+                    <h3>💡 Oportunidades</h3>
+                </div>
+                <div id="opportunitiesContent">
+                    <p>Nenhuma oportunidade identificada</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>📝 Notas de Mercado</h3>
+                </div>
+                <div id="notesContent">
                     <p>Carregando notas...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alerts Tab -->
+        <section class="tab-content" id="alerts">
+            <div class="card">
+                <div class="card-header">
+                    <h3>🚨 Alertas Ativos</h3>
+                    <button class="button" onclick="clearAlerts()">Limpar Todos</button>
+                </div>
+                <div id="alertsContent">
+                    <p class="no-alerts">Nenhum alerta ativo</p>
                 </div>
             </div>
         </section>
